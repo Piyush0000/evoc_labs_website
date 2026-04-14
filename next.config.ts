@@ -7,15 +7,15 @@ const prodBasePath =
   (repoName ? `/${repoName}` : "/EvocLabs-Next.js");
 
 const nextConfig: NextConfig = {
-  // Use static export + custom dist folder only for production builds.
-  // In dev, keeping defaults prevents Turbopack from persisting into /dist/dev.
-  output: isProd ? "export" : undefined,
+  // Only use static export if explicitly requested (e.g. for GitHub Pages)
+  // Vercel deployment should NOT use 'export' as it breaks API routes and some styling.
+  output: process.env.IS_STATIC_EXPORT ? "export" : undefined,
   distDir: isProd ? "dist" : ".next",
-  // GitHub Pages serves your site from /<repo-name> by default.
-  // This keeps local dev at / and makes Pages deploy load CSS/assets correctly.
-  basePath: isProd ? prodBasePath : undefined,
-  assetPrefix: isProd ? prodBasePath : undefined,
-  trailingSlash: isProd ? true : undefined,
+  // GitHub Pages usually needs a basePath (e.g. /repo-name). 
+  // Vercel and local development should NOT have this.
+  basePath: process.env.IS_GITHUB_PAGES ? prodBasePath : undefined,
+  assetPrefix: process.env.IS_GITHUB_PAGES ? prodBasePath : undefined,
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
