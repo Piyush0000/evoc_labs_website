@@ -45,21 +45,38 @@ export async function submitInternshipApplication(input: InternshipApplicationIn
   const db = getFirebaseDb();
   const apps = collection(db, "applications");
 
+  // 1. Save to Firestore
   await withTimeout(
     addDoc(apps, {
-    roleId: input.roleId,
-    fullName: input.fullName,
-    email: input.email,
-    githubUrl: input.githubUrl ?? null,
-    portfolioUrl: input.portfolioUrl ?? null,
-    resumeUrl: input.resumeUrl ?? null,
-    projectLinks: input.projectLinks ?? null,
-    message: input.message ?? null,
-    createdAt: serverTimestamp(),
-    source: "careers_page",
+      roleId: input.roleId,
+      fullName: input.fullName,
+      email: input.email,
+      githubUrl: input.githubUrl ?? null,
+      portfolioUrl: input.portfolioUrl ?? null,
+      resumeUrl: input.resumeUrl ?? null,
+      projectLinks: input.projectLinks ?? null,
+      message: input.message ?? null,
+      createdAt: serverTimestamp(),
+      source: "careers_page",
     }),
     12_000,
     "FIREBASE_WRITE_TIMEOUT",
   );
+
+  // 2. Send email notification via API route
+  // We do this after Firestore succeeds. If it fails, we log it but don't crash the user flow.
+  try {
+    const response = await fetch("/api/send-career-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    
+    if (!response.ok) {
+      console.error("Failed to send email notification", await response.text());
+    }
+  } catch (err) {
+    console.error("Error calling email API:", err);
+  }
 }
 
