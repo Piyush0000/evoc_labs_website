@@ -11,7 +11,8 @@ const nextConfig: NextConfig = {
   // 1. If on GitHub Actions -> enable static export for GitHub Pages
   // 2. If on Vercel or Local -> disable export to keep API routes and Styles working
   output: process.env.GITHUB_ACTIONS ? "export" : undefined,
-  distDir: "dist",
+  // Only use custom distDir for GitHub Pages (via CI)
+  ...(process.env.GITHUB_ACTIONS ? { distDir: "dist" } : {}),
   // GitHub Pages usually needs a basePath (e.g. /repo-name). 
   // Vercel and local development should NOT have this.
   basePath: process.env.GITHUB_ACTIONS ? prodBasePath : undefined,
