@@ -7,14 +7,15 @@ const prodBasePath =
   (repoName ? `/${repoName}` : "/EvocLabs-Next.js");
 
 const nextConfig: NextConfig = {
-  // Only use static export if explicitly requested (e.g. for GitHub Pages)
-  // Vercel deployment should NOT use 'export' as it breaks API routes and some styling.
-  output: process.env.IS_STATIC_EXPORT ? "export" : undefined,
-  distDir: isProd ? "dist" : ".next",
+  // Automatically detect the environment:
+  // 1. If on GitHub Actions -> enable static export for GitHub Pages
+  // 2. If on Vercel or Local -> disable export to keep API routes and Styles working
+  output: process.env.GITHUB_ACTIONS ? "export" : undefined,
+  distDir: "dist",
   // GitHub Pages usually needs a basePath (e.g. /repo-name). 
   // Vercel and local development should NOT have this.
-  basePath: process.env.IS_GITHUB_PAGES ? prodBasePath : undefined,
-  assetPrefix: process.env.IS_GITHUB_PAGES ? prodBasePath : undefined,
+  basePath: process.env.GITHUB_ACTIONS ? prodBasePath : undefined,
+  assetPrefix: process.env.GITHUB_ACTIONS ? prodBasePath : undefined,
   trailingSlash: true,
   images: {
     unoptimized: true,
