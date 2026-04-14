@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 // To use this, the user needs to install resend: npm install resend
 // and add RESEND_API_KEY to their .env file
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  
   try {
     const body = await request.json();
     const { fullName, email, githubUrl, portfolioUrl, resumeUrl, projectLinks, message } = body;
