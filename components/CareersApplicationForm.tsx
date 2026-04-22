@@ -23,18 +23,21 @@ function Input({
   onChange,
   placeholder,
   type = "text",
+  required,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  required?: boolean;
 }) {
   return (
     <label className="block">
       <span className="text-sm font-medium text-zinc-300">{label}</span>
       <input
         type={type}
+        required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -57,8 +60,26 @@ export default function CareersApplicationForm() {
   const [message, setMessage] = useState("");
 
   const canSubmit = useMemo(() => {
-    return fullName.trim().length >= 2 && isEmail(email) && status !== "submitting";
-  }, [email, fullName, status]);
+    return (
+      fullName.trim().length >= 2 &&
+      isEmail(email) &&
+      githubUrl.trim().length > 0 &&
+      portfolioUrl.trim().length > 0 &&
+      resumeUrl.trim().length > 0 &&
+      projectLinks.trim().length > 0 &&
+      message.trim().length > 0 &&
+      status !== "submitting"
+    );
+  }, [
+    email,
+    fullName,
+    githubUrl,
+    portfolioUrl,
+    resumeUrl,
+    projectLinks,
+    message,
+    status,
+  ]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -154,6 +175,7 @@ export default function CareersApplicationForm() {
               value={fullName}
               onChange={setFullName}
               placeholder="Your name"
+              required
             />
             <Input
               label="Email *"
@@ -161,36 +183,41 @@ export default function CareersApplicationForm() {
               onChange={setEmail}
               placeholder="you@email.com"
               type="email"
+              required
             />
             <Input
-              label="GitHub (optional)"
+              label="GitHub *"
               value={githubUrl}
               onChange={setGithubUrl}
               placeholder="https://github.com/username"
+              required
             />
             <Input
-              label="Portfolio (optional)"
+              label="Portfolio *"
               value={portfolioUrl}
               onChange={setPortfolioUrl}
               placeholder="https://your-portfolio.com"
+              required
             />
             <Input
-              label="Resume link (optional)"
+              label="Resume link *"
               value={resumeUrl}
               onChange={setResumeUrl}
               placeholder="Drive / Notion / PDF link"
+              required
             />
             <Input
-              label="Next.js project links (optional)"
+              label="Next.js project links *"
               value={projectLinks}
               onChange={setProjectLinks}
               placeholder="Comma-separated links"
+              required
             />
           </div>
 
           <label className="block mt-4">
             <span className="text-sm font-medium text-zinc-300">
-              Message (optional)
+              Message *
             </span>
             <textarea
               value={message}
@@ -198,6 +225,7 @@ export default function CareersApplicationForm() {
               rows={5}
               placeholder="Tell us what you’ve built, what you want to learn, and why you’re a fit."
               className="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none focus:border-white/20 resize-y"
+              required
             />
           </label>
 
